@@ -1,0 +1,7 @@
+
+
+hidden node id reuse after deleting node?
+    pros: save memory of node details storage
+    cons: need additional trick to retrieve unused id
+
+forward order of nodes?
