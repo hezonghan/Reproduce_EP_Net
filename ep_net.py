@@ -4,6 +4,7 @@ import copy
 import json
 import math
 import random
+import sys
 
 from timeit import default_timer
 
@@ -324,6 +325,8 @@ def ep_net_optimize(
     d_input = len(dataset[0]['input'])
     d_output = len(dataset[0]['output'])
 
+    print('\nPopulation Initialization is time-consuming. Please wait patiently.\n')
+    sys.stdout.flush()
     t0 = default_timer()
 
     population = [
@@ -347,6 +350,11 @@ def ep_net_optimize(
     
     t1 = default_timer()
     print('\nInitial population generating + evaluating costs {:.3f} s.\n'.format(t1 - t0))
+
+    print('\nsorted population:')
+    for gmp_idx in sorted(range(0, population_size), key=lambda gmp_idx: fitness_values[gmp_idx]):
+        print('\tfitness={:.6f} , active_hidden={}'.format(fitness_values[gmp_idx], population[gmp_idx].active_hidden_nodes_cnt))
+    sys.stdout.flush()
 
     for generation in range(1, generations+1):  # TODO
         print('\ngeneration #{}:'.format(generation))
@@ -375,6 +383,14 @@ def ep_net_optimize(
             pass
         else:
             assert False
+
+        if generation % population_size == 0:
+            print('\nsorted population:')
+            for gmp_idx in sorted(range(0, population_size), key=lambda gmp_idx: fitness_values[gmp_idx]):
+                print('\tfitness={:.6f} , active_hidden={}'.format(fitness_values[gmp_idx], population[gmp_idx].active_hidden_nodes_cnt))
+
+        sys.stdout.flush()
+
 
     best_gmp_idx = min(list(range(0, population_size)), key=lambda gmp_idx: fitness_values[gmp_idx])
     best_gmp = population[best_gmp_idx]
