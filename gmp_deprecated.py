@@ -58,6 +58,33 @@ class DynamicGMP:
 
     # =================================================
 
+    # def is_enabled_edge(self, src_node_id, dst_node_id):
+    #     if src_node_id not in self.conn: return False
+    #     if dst_node_id not in self.conn[src_node_id]: return False
+    #     if not self.conn[src_node_id][dst_node_id][0]: return False
+    #     return True
+    
+    # def is_enabled_edge(self, src_node_id, dst_node_id):
+    #     if src_node_id not in self.conn: return False
+    #     if dst_node_id not in self.conn[src_node_id]: return False
+    # 
+    #     if self.is_hidden_node(src_node_id) and self.prev_node[src_node_id] is None: return False
+    #     if self.is_hidden_node(dst_node_id) and self.prev_node[dst_node_id] is None: return False
+    # 
+    #     if not self.conn[src_node_id][dst_node_id][0]: return False
+    # 
+    #     return True
+
+    # =================================================
+
+    # def enabled_edges(self):
+    #     for src_node_id in self.conn:
+    #         for dst_node_id in self.conn[src_node_id]:
+    #             if self.is_enabled_edge(src_node_id, dst_node_id):
+    #                 yield (src_node_id, dst_node_id)
+    
+    # =================================================
+
     def split_hidden_node(self, original_node_id, alpha=None):
         assert self.d_input + self.d_output <= original_node_id < self.nodes_cnt
 
