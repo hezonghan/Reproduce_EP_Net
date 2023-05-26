@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     print('\n\nStarted at {}'.format(get_date_time_str()))
 
-    N = 4
+    N = 3
     dataset = generate_dataset(N)
     # print(json.dumps(dataset, indent=4))
     print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
@@ -87,12 +87,16 @@ if __name__ == '__main__':
     # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.1, 0.6  # overwritten
     # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.001, 0.006  # overwritten
     mbp_lb_learning_rate, mbp_ub_learning_rate = 0.001, 10  # overwritten
+    # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.01, 10  # overwritten
     # -------
     # mbp_learning_rate_change = 0.05
     # mbp_learning_rate_change = 0.0005
-    learning_rate_increase_multiple, learning_rate_decrease_multiple = 1.05, 0.6
+    # learning_rate_increase_multiple, learning_rate_decrease_multiple = 1.05, 0.6
+    learning_rate_increase_multiple, learning_rate_decrease_multiple = 1.25, 0.8
+    # learning_rate_increase_multiple, learning_rate_decrease_multiple = 2, 0.5
     # -------
     # mbp_once_total_epochs = 300  # overwritten
+    mbp_once_total_epochs = 3000  # overwritten
     # -------
     mbp_learning_rate_adapt_epochs = 5
 
@@ -187,6 +191,9 @@ if __name__ == '__main__':
         initialize_mutation_controller=initialize_mutation_controller,
         evolve_mutation_controller = evolve_mutation_controller,
     )
+
+    print('mbp epochs: {}'.format(mbp.all_invokes_epochs_cnt))
+
     print('\n\033[1;32mBest gmp:\033[0m\n')
     print('nodes: {}'.format( ' -> '.join([str(node_id) for node_id in best_gmp.next_nodes(0)]) ))
     # print(json.dumps(best_gmp.conn, indent=4))

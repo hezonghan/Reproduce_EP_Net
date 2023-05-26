@@ -117,7 +117,7 @@ class DefaultInitializeMutationController(InitializeMutationController):
         self.mbp = mbp
 
     def operate(self, gmp:DynamicGMP, dataset):
-        self.mbp.operate(gmp, dataset)
+        return self.mbp.operate(gmp, dataset)
 
 
 class EvolveMutationController:
@@ -172,20 +172,20 @@ class DefaultEvolveMutationController(EvolveMutationController):
 
     def operate(self, gmp:DynamicGMP, dataset, parent_fitness, worst_fitness):
 
-        self.mbp.operate(gmp, dataset)
+        gmp_0 = self.mbp.operate(gmp, dataset)
         # --------
-        if self.fitness_function(gmp, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
+        if self.fitness_function(gmp_0, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
             print('\treturned by mbp')
-            return gmp, 'parent'
+            return gmp_0, 'parent'
 
 
         # self.mbp.operate(gmp, dataset)
         # --------
-        self.sa.operate(gmp, dataset)
+        gmp_A = self.sa.operate(gmp, dataset)
         # --------
-        if self.fitness_function(gmp, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
+        if self.fitness_function(gmp_A, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
             print('\treturned by A')
-            return gmp, 'parent'
+            return gmp_A, 'parent'
 
 
         conn_importance = test_connection_importance(gmp, dataset)
@@ -337,19 +337,20 @@ def ep_net_optimize(
     t0 = default_timer()
 
     population = [
-        DynamicGMP(
-            d_input=d_input,
-            d_output=d_output,
-            lb_hidden=lb_hidden,
-            ub_hidden=ub_hidden,
-            init_hidden_nodes_cnt=random.randint(lb_init_hidden_nodes_cnt, ub_init_hidden_nodes_cnt),
-            init_conn_density=init_conn_density,
-            init_weight_abs_ub=init_weight_abs_ub,
+        initialize_mutation_controller.operate(
+            gmp=DynamicGMP(
+                d_input=d_input,
+                d_output=d_output,
+                lb_hidden=lb_hidden,
+                ub_hidden=ub_hidden,
+                init_hidden_nodes_cnt=random.randint(lb_init_hidden_nodes_cnt, ub_init_hidden_nodes_cnt),
+                init_conn_density=init_conn_density,
+                init_weight_abs_ub=init_weight_abs_ub,
+            ),
+            dataset=dataset
         )
         for _ in range(0, population_size)
     ]
-    for gmp in population: 
-        initialize_mutation_controller.operate(gmp=gmp, dataset=dataset)
     fitness_values = [
         fitness_function(gmp, dataset)
         for gmp in population
@@ -414,6 +415,9 @@ def ep_net_optimize(
             print('\nsorted population:')
             for gmp_idx in sorted(range(0, population_size), key=lambda gmp_idx: fitness_values[gmp_idx]):
                 print('\tfitness={:.6f} , active_hidden={}'.format(fitness_values[gmp_idx], population[gmp_idx].active_hidden_nodes_cnt))
+
+            t4 = default_timer()
+            print('Up to now, evolution totally costs {:.2f} s.'.format(t4 - t1))
 
         sys.stdout.flush()
 

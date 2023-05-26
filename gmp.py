@@ -371,7 +371,7 @@ class Mutation:
     def __init__(self):
         pass
 
-    def operate(self, gmp:DynamicGMP):  # in-place operate, which modifies the original instance.
+    def operate(self, gmp:DynamicGMP):
         raise NotImplementedError
 
 
@@ -382,6 +382,8 @@ class MutationNodeSplitting(Mutation):
         self.alpha = alpha
 
     def operate(self, gmp:DynamicGMP, original_node_id, alpha=None):
+
+        gmp = copy.deepcopy(gmp)
 
         if alpha is None:
             alpha = self.alpha
@@ -413,6 +415,8 @@ class MutationNodeSplitting(Mutation):
 
         # gmp.conn[new_node_A_id][new_node_B_id] = (False, 0.0)
 
+        return gmp
+
 
 class MutationModifiedBackPropagation(Mutation):
 
@@ -439,8 +443,9 @@ class MutationModifiedBackPropagation(Mutation):
         self.learning_rate_adapt_epochs = learning_rate_adapt_epochs  # ?
         self.total_epochs = total_epochs  # ?
 
+        self.all_invokes_epochs_cnt = 0
+
     def train(self, gmp:DynamicGMP, dataset, learning_rate):
-            # in-place training
             # self.train(gmp, dataset, learning_rate)
             _, overall_final_partial_derivative = gmp.evaluate_all(dataset)
 
@@ -459,20 +464,27 @@ class MutationModifiedBackPropagation(Mutation):
 
     def operate(self, gmp:DynamicGMP, dataset):
 
+        gmp = copy.deepcopy(gmp)
+
         last_overall_loss, _ = gmp.evaluate_all(dataset, derivative_unnecessary=True)
         last_gmp = copy.deepcopy(gmp)
 
         learning_rate = self.init_learning_rate
+
+        # print('\t\t\t\033[33mStart MBP : learning_rate={:.3f} , current_overall_loss={:.6f}\033[0m'.format(learning_rate, last_overall_loss))
 
         for epoch_idx in range(1, self.total_epochs + 1):
             self.train(gmp, dataset, learning_rate)
 
             if epoch_idx % self.learning_rate_adapt_epochs == 0:
                 current_overall_loss, _ = gmp.evaluate_all(dataset, derivative_unnecessary=True)
-                print('\t\tAfter {:03d} epochs : learning_rate={:.3f} current_overall_loss={:.6f}'.format(epoch_idx, learning_rate, current_overall_loss))
-                if current_overall_loss < last_overall_loss:
+                # print('\t\t\t\033[33mAfter {:03d} epochs : learning_rate={:.3f} , overall_loss={:.6f} -> {:.6f}\033[0m'.format(epoch_idx, learning_rate, last_overall_loss, current_overall_loss), end='')
+
+                # if current_overall_loss < last_overall_loss:
+                if current_overall_loss < last_overall_loss * 0.99:
                     # learning_rate += self.learning_rate_change
                     learning_rate *= self.learning_rate_increase_multiple
+                    # print(' \033[32m --> learning_rate *= {}\033[0m'.format(self.learning_rate_increase_multiple))
                     if learning_rate >= self.ub_learning_rate: learning_rate = self.ub_learning_rate
                     
                     last_overall_loss = current_overall_loss
@@ -480,10 +492,18 @@ class MutationModifiedBackPropagation(Mutation):
                 else:
                     # learning_rate -= self.learning_rate_change
                     learning_rate *= self.learning_rate_decrease_multiple
-                    if learning_rate <= self.lb_learning_rate: learning_rate = self.lb_learning_rate
-                    
+                    # print(' \033[31m --> learning_rate *= {}\033[0m'.format(self.learning_rate_decrease_multiple))
+                    # if learning_rate <= self.lb_learning_rate: learning_rate = self.lb_learning_rate
+
                     gmp = copy.deepcopy(last_gmp)
-        print('\t\tFinished {} epochs.\n\n'.format(self.total_epochs))
+
+                    if learning_rate <= self.lb_learning_rate: break
+
+        print('\t\t\033[33mFinished {} epochs.\033[0m\n\n'.format(epoch_idx))
+        self.all_invokes_epochs_cnt += epoch_idx
+
+        return gmp
+        # return gmp, epoch_idx
 
     # def train(self, gmp:DynamicGMP, dataset, learning_rate):  # in-place modification
 
@@ -572,6 +592,9 @@ class MutationSimulatedAnnealing(Mutation):
             modified_gmp.conn[src_node_id][dst_node_id][1] *= random.random() * 0.2 + 0.9  # FIXME
 
     def operate(self, gmp: DynamicGMP, dataset):  # NOT in-place operate
+
+        gmp = copy.deepcopy(gmp)
+
         fitness_value = self.fitness_function(gmp, dataset)
 
         for temperature in self.temperatures_list:
