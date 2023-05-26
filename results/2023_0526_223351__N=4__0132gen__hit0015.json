@@ -1,0 +1,253 @@
+{
+    "result_file_path": "./results/2023_0526_223351__N=4__0132gen__hit0015.json",
+    "start_date_time_str": "2023_0526_223351",
+    "problem": {
+        "N": 4,
+        "with_bias": true
+    },
+    "config": {
+        "evolve": {
+            "population_size": 20,
+            "generations": 1000,
+            "evolve_significant_reduce_ratio": 0.05
+        },
+        "network_structure_limit": {
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "lb_deleted_nodes_cnt": 1,
+            "ub_deleted_nodes_cnt": 2,
+            "lb_added_nodes_cnt": 1,
+            "ub_added_nodes_cnt": 2,
+            "lb_deleted_connections_cnt": 1,
+            "ub_deleted_connections_cnt": 3,
+            "lb_added_connections_cnt": 1,
+            "ub_added_connections_cnt": 3
+        },
+        "network_structure_init": {
+            "lb_init_hidden_nodes_cnt": 2,
+            "ub_init_hidden_nodes_cnt": 4,
+            "init_conn_density": 0.75,
+            "init_weight_abs_ub": 10
+        },
+        "mbp": {
+            "mbp_init_learning_rate": 1.5,
+            "mbp_lb_learning_rate": 0.001,
+            "mbp_ub_learning_rate": 10,
+            "learning_rate_increase_multiple": 1.25,
+            "learning_rate_decrease_multiple": 0.8,
+            "mbp_once_total_epochs": 3000,
+            "mbp_learning_rate_adapt_epochs": 5
+        },
+        "sa": {
+            "sa_number_of_temperature": 5,
+            "sa_iterations_per_temperature": 100,
+            "sa_temperatures_list": [
+                0.14426950408889636,
+                0.11541560327111708,
+                0.0865617024533378,
+                0.05770780163555854,
+                0.02885390081777927
+            ]
+        },
+        "node_spliting": {
+            "node_spliting_alpha": 0.4
+        }
+    },
+    "result": {
+        "used_generations": 132,
+        "hits": 15,
+        "network": {
+            "d_input": 5,
+            "d_output": 1,
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "nodes_cnt": 10,
+            "active_hidden_nodes_cnt": 4,
+            "prev_node": {
+                "0": null,
+                "1": 0,
+                "2": 1,
+                "3": 2,
+                "4": 3,
+                "6": 4,
+                "7": 6,
+                "8": 7,
+                "9": 8,
+                "5": 9
+            },
+            "next_node": {
+                "0": 1,
+                "1": 2,
+                "2": 3,
+                "3": 4,
+                "4": 6,
+                "6": 7,
+                "7": 8,
+                "8": 9,
+                "9": 5,
+                "5": null
+            },
+            "conn": {
+                "0": {
+                    "6": [
+                        true,
+                        -6.711520960912153
+                    ],
+                    "7": [
+                        false,
+                        -6.689102149517228
+                    ],
+                    "8": [
+                        true,
+                        -10.68125869722197
+                    ],
+                    "9": [
+                        true,
+                        -6.88532488386417
+                    ],
+                    "5": [
+                        true,
+                        -7.609697462992326
+                    ]
+                },
+                "1": {
+                    "6": [
+                        true,
+                        4.914885505644063
+                    ],
+                    "7": [
+                        true,
+                        -2.2368583377570417
+                    ],
+                    "8": [
+                        true,
+                        10.887039260522268
+                    ],
+                    "9": [
+                        true,
+                        9.306833867776179
+                    ],
+                    "5": [
+                        true,
+                        8.020135095242374
+                    ]
+                },
+                "2": {
+                    "6": [
+                        true,
+                        6.774824191644808
+                    ],
+                    "7": [
+                        true,
+                        9.79195854321842
+                    ],
+                    "8": [
+                        false,
+                        -9.844470896876928
+                    ],
+                    "9": [
+                        true,
+                        9.497259387660984
+                    ],
+                    "5": [
+                        true,
+                        7.5997207572513465
+                    ]
+                },
+                "3": {
+                    "6": [
+                        true,
+                        -7.149304419617827
+                    ],
+                    "7": [
+                        true,
+                        7.961972026227125
+                    ],
+                    "8": [
+                        true,
+                        2.0887228330636205
+                    ],
+                    "9": [
+                        true,
+                        11.679191610028528
+                    ],
+                    "5": [
+                        true,
+                        10.508929726247583
+                    ]
+                },
+                "4": {
+                    "6": [
+                        true,
+                        -2.1733518079484675
+                    ],
+                    "7": [
+                        true,
+                        -11.588575918832417
+                    ],
+                    "8": [
+                        true,
+                        -6.627864234427068
+                    ],
+                    "9": [
+                        true,
+                        2.2437751821638985
+                    ],
+                    "5": [
+                        true,
+                        11.88108721213823
+                    ]
+                },
+                "6": {
+                    "7": [
+                        false,
+                        -5.9084605804296
+                    ],
+                    "8": [
+                        false,
+                        -9.933794166156312
+                    ],
+                    "9": [
+                        true,
+                        10.050198830901504
+                    ],
+                    "5": [
+                        true,
+                        5.180865128335083
+                    ]
+                },
+                "7": {
+                    "8": [
+                        true,
+                        6.784914627625313
+                    ],
+                    "9": [
+                        false,
+                        -6.543510792532073
+                    ],
+                    "5": [
+                        false,
+                        -14.979708010183455
+                    ]
+                },
+                "8": {
+                    "9": [
+                        true,
+                        6.724162374237792
+                    ],
+                    "5": [
+                        true,
+                        -19.095447066632243
+                    ]
+                },
+                "9": {
+                    "5": [
+                        true,
+                        -18.1490593328305
+                    ]
+                },
+                "5": {}
+            }
+        }
+    }
+}
