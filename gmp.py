@@ -328,6 +328,40 @@ class DynamicGMP:
         copied.conn = copy.deepcopy(self.conn)
         return copied
 
+    # =================================================
+
+    def display(self):
+
+        print('\n\n')
+
+        print('\t', end='')
+        for dst_node_id in self.next_nodes(0):
+            if self.is_input_node(dst_node_id):
+                continue
+
+            style = '1;34' if self.is_hidden_node(dst_node_id) else '0'
+            print(' \033[{}m#{:02d}\033[0m\t'.format(style, dst_node_id), end='')
+        print()
+
+        for src_node_id in self.next_nodes(0):
+            print()
+
+            style = '1;34' if self.is_hidden_node(src_node_id) else '0'
+            print('\033[{}m#{:02d}\033[0m\t'.format(style, src_node_id), end='')
+
+            for dst_node_id in self.next_nodes(0):
+                if self.is_input_node(dst_node_id):
+                    continue
+
+                if not self.is_existing_edge(src_node_id, dst_node_id):
+                    print('\t', end='')
+                elif not self.is_enabled_edge(src_node_id, dst_node_id):
+                    print('----\t', end='')
+                else:
+                    print('{:.2f}\t'.format(self.conn[src_node_id][dst_node_id][1]), end='')
+            print()
+
+
 
 class Mutation:
 
@@ -457,6 +491,43 @@ class MutationModifiedBackPropagation(Mutation):
 #         gmp_troch.
 #         gmp_troch.train()
 
+
+class MutationModifiedBackPropagation_Focus(MutationModifiedBackPropagation):
+
+    def __init__(self, init_learning_rate=0.5, learning_rate_change=0.05, lb_learning_rate=0.1, ub_learning_rate=0.6, learning_rate_adapt_epochs=10, total_epochs=100):
+        super().__init__(init_learning_rate, learning_rate_change, lb_learning_rate, ub_learning_rate, learning_rate_adapt_epochs, total_epochs)
+        print('\n\033[1;33mNote: using MutationModifiedBackPropagation_Focus.\033[0m')
+
+    def train(self, gmp: DynamicGMP, dataset, learning_rate):
+
+        datapoint_weights_sum = 0
+        weighted_final_partial_derivative = {
+            node_i_id: {
+                node_j_id: 
+                    0.0
+                for node_j_id in gmp.next_nodes(node_i_id, including=False)
+                if gmp.is_enabled_edge(node_i_id, node_j_id)
+            }
+            for node_i_id in gmp.next_nodes(0)
+        }
+
+        for datapoint in dataset:
+            _, loss, fpd, _, _ = gmp.evaluate(datapoint['input'], datapoint['output'], derivative_unnecessary=False)
+
+            datapoint_weight = loss
+            datapoint_weights_sum += datapoint_weight
+
+            for node_i_id in gmp.next_nodes(0):
+                for node_j_id in gmp.next_nodes(node_i_id, including=False):
+                    if not gmp.is_enabled_edge(node_i_id, node_j_id): continue
+                    weighted_final_partial_derivative[node_i_id][node_j_id] += fpd[node_i_id][node_j_id] * datapoint_weight
+
+        datapoint_weights_avg = datapoint_weights_sum / len(dataset)
+
+        for src_node_id in gmp.next_nodes(0):
+            for dst_node_id in gmp.next_nodes(src_node_id, including=False):
+                if not gmp.is_enabled_edge(src_node_id, dst_node_id): continue
+                gmp.conn[src_node_id][dst_node_id][1] -= learning_rate * weighted_final_partial_derivative[src_node_id][dst_node_id] / datapoint_weights_avg
 
 
 class MutationSimulatedAnnealing(Mutation):

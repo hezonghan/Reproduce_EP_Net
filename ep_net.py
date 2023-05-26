@@ -360,6 +360,7 @@ def ep_net_optimize(
         print('\ngeneration #{}:'.format(generation))
         # for gmp_idx in range(0, population_size): print('\tfitness={:.6f} , active_hidden={}'.format(fitness_values[gmp_idx], population[gmp_idx].active_hidden_nodes_cnt))
 
+        t2 = default_timer()
         selected_parent_idx, worst_idx = parent_selection_function(fitness_values)
         offspring, replaced = evolve_mutation_controller.operate(
             gmp=copy.deepcopy(population[selected_parent_idx]),
@@ -372,6 +373,23 @@ def ep_net_optimize(
         # print('\treplaced: {}'.format(replaced))
         # print('\treplaced: {} (parent: {} , worst: {})'.format(replaced, fitness_values[selected_parent_idx], fitness_values[worst_idx]))
         print('\treplaced: {} (worst: {:.6f})'.format(replaced, fitness_values[worst_idx]))
+
+        accuracy = [0, 0]
+        for datapoint in dataset:
+            estimated_output_data, loss, fpd, _, _ = offspring.evaluate(datapoint['input'], datapoint['output'], derivative_unnecessary=True)
+            accuracy[1] += 1
+            if (estimated_output_data[0] - 0.5) * (datapoint['output'][0] - 0.5) > 0: accuracy[0] += 1
+            # print('\t\tloss = {:.6f}'.format(loss))
+            print('\t\tloss = {} - {} = {:.6f}'.format(datapoint['output'], estimated_output_data, loss))
+        print('\toffspring accuracy: {}/{} = {:.2f}%'.format(accuracy[0], accuracy[1], accuracy[0]/accuracy[1]*100 ))
+        if accuracy[0] == accuracy[1]:
+            t4 = default_timer()
+            print('\033[1;32mFound completely-matching (accuracy=100%) gmp!\033[0m')
+            print('Evolution totally costs {:.2f} s.'.format(t4 - t1))
+            return offspring, generation
+
+        t3 = default_timer()
+        print('\tcosts {:.3f} s.'.format(t3-t2))
 
         if replaced == 'parent':
             population[selected_parent_idx] = offspring
@@ -391,10 +409,12 @@ def ep_net_optimize(
 
         sys.stdout.flush()
 
+    t4 = default_timer()
+    print('Evolution totally costs {:.2f} s.'.format(t4 - t1))
 
     best_gmp_idx = min(list(range(0, population_size)), key=lambda gmp_idx: fitness_values[gmp_idx])
     best_gmp = population[best_gmp_idx]
 
     print('best gmp: fitness={:.6f} , active_hidden={}'.format(fitness_values[best_gmp_idx], population[best_gmp_idx].active_hidden_nodes_cnt))
 
-    return best_gmp
+    return best_gmp, generation

@@ -3,8 +3,9 @@
 import json
 import math
 
-from gmp import MutationModifiedBackPropagation, MutationSimulatedAnnealing, MutationNodeSplitting
+from gmp import MutationModifiedBackPropagation, MutationModifiedBackPropagation_Focus, MutationSimulatedAnnealing, MutationNodeSplitting
 from ep_net import ep_net_optimize, simple_gmp_fitness, simple_rank_based_selection, DefaultInitializeMutationController, DefaultEvolveMutationController
+from hzh_utils import get_date_time_str
 
 
 def generate_bitstring(v):
@@ -19,6 +20,7 @@ def generate_dataset(N):
         {
             'input': generate_bitstring(i),
             'output': [sum(generate_bitstring(i)) % 2],
+            # 'output': [0.4 + 0.2 * (sum(generate_bitstring(i)) % 2)],
         }
         for i in range(0, 2**N)
     ]
@@ -26,9 +28,12 @@ def generate_dataset(N):
 
 if __name__ == '__main__':
 
-    N = 4
+    print('\n\nStarted at {}'.format(get_date_time_str()))
+
+    N = 3
     dataset = generate_dataset(N)
     # print(json.dumps(dataset, indent=4))
+    print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
 
     # ==================================================
     
@@ -62,18 +67,28 @@ if __name__ == '__main__':
     # lb_hidden, ub_hidden = 1, 10
     # lb_hidden, ub_hidden = 10, 20
     # lb_hidden, ub_hidden = 5, 10
-    lb_hidden, ub_hidden = 2, 10
+    # lb_hidden, ub_hidden = 2, 10
+    lb_hidden, ub_hidden = 2, N
+    # lb_hidden, ub_hidden = 2, (N//2)+1
     # -------
     # lb_init_hidden_nodes_cnt, ub_init_hidden_nodes_cnt = lb_hidden, ub_hidden  # overwritten
+    # lb_init_hidden_nodes_cnt, ub_init_hidden_nodes_cnt = 2, (N//2)+1  # overwritten
     # -------
     # init_weight_abs_ub = 1
     init_weight_abs_ub = 10
     # init_weight_abs_ub = 100
+    # init_weight_abs_ub = 30
 
 
     # mbp_init_learning_rate = 0.5  # overwritten
+    # mbp_init_learning_rate = 0.005  # overwritten
+    # -------
     # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.1, 0.6  # overwritten
+    # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.001, 0.006  # overwritten
+    # -------
     mbp_learning_rate_change = 0.05
+    # mbp_learning_rate_change = 0.0005
+    # -------
     mbp_learning_rate_adapt_epochs = 5
 
 
@@ -101,6 +116,7 @@ if __name__ == '__main__':
     # ==================================================
 
     mbp = MutationModifiedBackPropagation(
+    # mbp = MutationModifiedBackPropagation_Focus(
         init_learning_rate=mbp_init_learning_rate,
         learning_rate_change=mbp_learning_rate_change,
         lb_learning_rate=mbp_lb_learning_rate,
@@ -141,7 +157,7 @@ if __name__ == '__main__':
 
     # ------------------------------
 
-    best_gmp = ep_net_optimize(
+    best_gmp, used_generations = ep_net_optimize(
         dataset=dataset,
 
         lb_hidden=lb_hidden,
@@ -159,6 +175,8 @@ if __name__ == '__main__':
         initialize_mutation_controller=initialize_mutation_controller,
         evolve_mutation_controller = evolve_mutation_controller,
     )
-    print('\t\tnodes: {}'.format( ' -> '.join([str(node_id) for node_id in best_gmp.next_nodes(0)]) ))
-    print(json.dumps(best_gmp.conn, best_gmp.next_node))
+    print('\n\033[1;32mBest gmp:\033[0m\n')
+    print('nodes: {}'.format( ' -> '.join([str(node_id) for node_id in best_gmp.next_nodes(0)]) ))
+    # print(json.dumps(best_gmp.conn, indent=4))
+    best_gmp.display()
 
