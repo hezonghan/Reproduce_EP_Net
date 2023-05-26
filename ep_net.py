@@ -174,6 +174,13 @@ class DefaultEvolveMutationController(EvolveMutationController):
 
         self.mbp.operate(gmp, dataset)
         # --------
+        if self.fitness_function(gmp, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
+            print('\treturned by mbp')
+            return gmp, 'parent'
+
+
+        # self.mbp.operate(gmp, dataset)
+        # --------
         self.sa.operate(gmp, dataset)
         # --------
         if self.fitness_function(gmp, dataset) < parent_fitness * (1 - self.significant_reduce_ratio):
@@ -380,7 +387,8 @@ def ep_net_optimize(
             accuracy[1] += 1
             if (estimated_output_data[0] - 0.5) * (datapoint['output'][0] - 0.5) > 0: accuracy[0] += 1
             # print('\t\tloss = {:.6f}'.format(loss))
-            print('\t\tloss = {} - {} = {:.6f}'.format(datapoint['output'], estimated_output_data, loss))
+            # print('\t\tloss = {} - {} = {:.6f}'.format(datapoint['output'], estimated_output_data, loss))
+            print('\t\tloss = {:.0f} - {:.4f}  ==>  {:.4f}  (assumed single output node)'.format(datapoint['output'][0], estimated_output_data[0], loss))
         print('\toffspring accuracy: {}/{} = {:.2f}%'.format(accuracy[0], accuracy[1], accuracy[0]/accuracy[1]*100 ))
         if accuracy[0] == accuracy[1]:
             t4 = default_timer()

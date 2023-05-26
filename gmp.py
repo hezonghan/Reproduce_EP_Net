@@ -285,7 +285,8 @@ class DynamicGMP:
                 final_partial_derivative[node_i_id][node_j_id] = 0
 
                 for output_node_id in range(self.d_input, self.d_input + self.d_output):
-                    final_partial_derivative[node_i_id][node_j_id] += partial_derivative[node_i_id][node_j_id][output_node_id] * (-1 if value[output_node_id] < desired_output_data[output_node_id - self.d_input] else 1)
+                    # final_partial_derivative[node_i_id][node_j_id] += partial_derivative[node_i_id][node_j_id][output_node_id] * (-1 if value[output_node_id] < desired_output_data[output_node_id - self.d_input] else 1)
+                    final_partial_derivative[node_i_id][node_j_id] += partial_derivative[node_i_id][node_j_id][output_node_id] * 2 * (value[output_node_id]  -  desired_output_data[output_node_id - self.d_input])  # squared loss
 
         return estimated_output_data, estimated_loss, final_partial_derivative, value, partial_derivative
 
@@ -353,7 +354,9 @@ class DynamicGMP:
                 if self.is_input_node(dst_node_id):
                     continue
 
-                if not self.is_existing_edge(src_node_id, dst_node_id):
+                if src_node_id == dst_node_id:
+                    print('\033[1;31mXXXX\033[0m\t', end='')
+                elif not self.is_existing_edge(src_node_id, dst_node_id):
                     print('\t', end='')
                 elif not self.is_enabled_edge(src_node_id, dst_node_id):
                     print('----\t', end='')
@@ -416,7 +419,9 @@ class MutationModifiedBackPropagation(Mutation):
     def __init__(
             self,
             init_learning_rate=0.5,
-            learning_rate_change=0.05,
+            # learning_rate_change=0.05,
+            learning_rate_increase_multiple=1.05,
+            learning_rate_decrease_multiple=0.6,
             lb_learning_rate=0.1,
             ub_learning_rate=0.6,
             learning_rate_adapt_epochs=10,  # k
@@ -425,7 +430,9 @@ class MutationModifiedBackPropagation(Mutation):
         super().__init__()
 
         self.init_learning_rate = init_learning_rate
-        self.learning_rate_change = learning_rate_change  # ?
+        # self.learning_rate_change = learning_rate_change  # ?
+        self.learning_rate_increase_multiple = learning_rate_increase_multiple
+        self.learning_rate_decrease_multiple = learning_rate_decrease_multiple
         self.lb_learning_rate = lb_learning_rate
         self.ub_learning_rate = ub_learning_rate
 
@@ -436,10 +443,19 @@ class MutationModifiedBackPropagation(Mutation):
             # in-place training
             # self.train(gmp, dataset, learning_rate)
             _, overall_final_partial_derivative = gmp.evaluate_all(dataset)
+
+            overall_final_partial_derivative_vector_length = math.sqrt(sum([
+                overall_final_partial_derivative[src_node_id][dst_node_id] ** 2
+                for src_node_id in gmp.next_nodes(0)
+                for dst_node_id in gmp.next_nodes(src_node_id, including=False)
+                if gmp.is_enabled_edge(src_node_id, dst_node_id)
+            ]))
+            # print(overall_final_partial_derivative_vector_length)
+
             for src_node_id in gmp.next_nodes(0):
                 for dst_node_id in gmp.next_nodes(src_node_id, including=False):
                     if not gmp.is_enabled_edge(src_node_id, dst_node_id): continue
-                    gmp.conn[src_node_id][dst_node_id][1] -= learning_rate * overall_final_partial_derivative[src_node_id][dst_node_id]
+                    gmp.conn[src_node_id][dst_node_id][1] -= learning_rate * overall_final_partial_derivative[src_node_id][dst_node_id] / overall_final_partial_derivative_vector_length
 
     def operate(self, gmp:DynamicGMP, dataset):
 
@@ -453,15 +469,21 @@ class MutationModifiedBackPropagation(Mutation):
 
             if epoch_idx % self.learning_rate_adapt_epochs == 0:
                 current_overall_loss, _ = gmp.evaluate_all(dataset, derivative_unnecessary=True)
+                print('\t\tAfter {:03d} epochs : learning_rate={:.3f} current_overall_loss={:.6f}'.format(epoch_idx, learning_rate, current_overall_loss))
                 if current_overall_loss < last_overall_loss:
-                    learning_rate += self.learning_rate_change
+                    # learning_rate += self.learning_rate_change
+                    learning_rate *= self.learning_rate_increase_multiple
+                    if learning_rate >= self.ub_learning_rate: learning_rate = self.ub_learning_rate
                     
                     last_overall_loss = current_overall_loss
                     last_gmp = copy.deepcopy(gmp)
                 else:
-                    learning_rate -= self.learning_rate_change
+                    # learning_rate -= self.learning_rate_change
+                    learning_rate *= self.learning_rate_decrease_multiple
+                    if learning_rate <= self.lb_learning_rate: learning_rate = self.lb_learning_rate
                     
                     gmp = copy.deepcopy(last_gmp)
+        print('\t\tFinished {} epochs.\n\n'.format(self.total_epochs))
 
     # def train(self, gmp:DynamicGMP, dataset, learning_rate):  # in-place modification
 
@@ -510,6 +532,8 @@ class MutationModifiedBackPropagation_Focus(MutationModifiedBackPropagation):
             }
             for node_i_id in gmp.next_nodes(0)
         }
+
+        # FIXME  normalize vector ??
 
         for datapoint in dataset:
             _, loss, fpd, _, _ = gmp.evaluate(datapoint['input'], datapoint['output'], derivative_unnecessary=False)

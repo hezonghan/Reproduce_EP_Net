@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     print('\n\nStarted at {}'.format(get_date_time_str()))
 
-    N = 3
+    N = 4
     dataset = generate_dataset(N)
     # print(json.dumps(dataset, indent=4))
     print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     mbp_once_total_epochs = 100
     lb_deleted_nodes_cnt, ub_deleted_nodes_cnt, lb_added_nodes_cnt, ub_added_nodes_cnt = 1, 2, 1, 2  # not sure
-    lb_deleted_connections_cnt, ub_deleted_connections_cnt = 1, 3
+    lb_deleted_connections_cnt, ub_deleted_connections_cnt, lb_added_connections_cnt, ub_added_connections_cnt = 1, 3, 1, 3  # not sure
     sa_number_of_temperature = 5
     sa_iterations_per_temperature = 100
 
@@ -82,12 +82,17 @@ if __name__ == '__main__':
 
     # mbp_init_learning_rate = 0.5  # overwritten
     # mbp_init_learning_rate = 0.005  # overwritten
+    mbp_init_learning_rate = 1.5  # overwritten
     # -------
     # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.1, 0.6  # overwritten
     # mbp_lb_learning_rate, mbp_ub_learning_rate = 0.001, 0.006  # overwritten
+    mbp_lb_learning_rate, mbp_ub_learning_rate = 0.001, 10  # overwritten
     # -------
-    mbp_learning_rate_change = 0.05
+    # mbp_learning_rate_change = 0.05
     # mbp_learning_rate_change = 0.0005
+    learning_rate_increase_multiple, learning_rate_decrease_multiple = 1.05, 0.6
+    # -------
+    # mbp_once_total_epochs = 300  # overwritten
     # -------
     mbp_learning_rate_adapt_epochs = 5
 
@@ -104,9 +109,14 @@ if __name__ == '__main__':
 
 
     node_spliting_alpha = 0.4
+    # node_spliting_alpha = -0.2
 
 
-    lb_added_connections_cnt, ub_added_connections_cnt = 1, 3
+    # ub_deleted_nodes_cnt = 1
+    # ub_added_nodes_cnt = 1
+    # ub_deleted_connections_cnt = 1
+    # ub_added_connections_cnt = 1
+    # overwritten
 
 
     # generations = 100
@@ -118,7 +128,9 @@ if __name__ == '__main__':
     mbp = MutationModifiedBackPropagation(
     # mbp = MutationModifiedBackPropagation_Focus(
         init_learning_rate=mbp_init_learning_rate,
-        learning_rate_change=mbp_learning_rate_change,
+        # learning_rate_change=mbp_learning_rate_change,
+        learning_rate_increase_multiple=learning_rate_increase_multiple,
+        learning_rate_decrease_multiple=learning_rate_decrease_multiple,
         lb_learning_rate=mbp_lb_learning_rate,
         ub_learning_rate=mbp_ub_learning_rate,
         learning_rate_adapt_epochs=mbp_learning_rate_adapt_epochs,
@@ -180,3 +192,4 @@ if __name__ == '__main__':
     # print(json.dumps(best_gmp.conn, indent=4))
     best_gmp.display()
 
+    print('\n\nSolved N-parity problem : \033[1;32mN={}\033[0m\n'.format(N))
