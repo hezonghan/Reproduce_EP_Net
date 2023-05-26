@@ -1,0 +1,253 @@
+{
+    "result_file_path": "./results/2023_0526_221918__N=4__0020gen__hit0015.json",
+    "start_date_time_str": "2023_0526_221918",
+    "problem": {
+        "N": 4,
+        "with_bias": true
+    },
+    "config": {
+        "evolve": {
+            "population_size": 20,
+            "generations": 1000,
+            "evolve_significant_reduce_ratio": 0.05
+        },
+        "network_structure_limit": {
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "lb_deleted_nodes_cnt": 1,
+            "ub_deleted_nodes_cnt": 2,
+            "lb_added_nodes_cnt": 1,
+            "ub_added_nodes_cnt": 2,
+            "lb_deleted_connections_cnt": 1,
+            "ub_deleted_connections_cnt": 3,
+            "lb_added_connections_cnt": 1,
+            "ub_added_connections_cnt": 3
+        },
+        "network_structure_init": {
+            "lb_init_hidden_nodes_cnt": 2,
+            "ub_init_hidden_nodes_cnt": 4,
+            "init_conn_density": 0.75,
+            "init_weight_abs_ub": 10
+        },
+        "mbp": {
+            "mbp_init_learning_rate": 1.5,
+            "mbp_lb_learning_rate": 0.001,
+            "mbp_ub_learning_rate": 10,
+            "learning_rate_increase_multiple": 1.25,
+            "learning_rate_decrease_multiple": 0.8,
+            "mbp_once_total_epochs": 3000,
+            "mbp_learning_rate_adapt_epochs": 5
+        },
+        "sa": {
+            "sa_number_of_temperature": 5,
+            "sa_iterations_per_temperature": 100,
+            "sa_temperatures_list": [
+                0.14426950408889636,
+                0.11541560327111708,
+                0.0865617024533378,
+                0.05770780163555854,
+                0.02885390081777927
+            ]
+        },
+        "node_spliting": {
+            "node_spliting_alpha": 0.4
+        }
+    },
+    "result": {
+        "used_generations": 20,
+        "hits": 15,
+        "network": {
+            "d_input": 5,
+            "d_output": 1,
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "nodes_cnt": 11,
+            "active_hidden_nodes_cnt": 4,
+            "prev_node": {
+                "0": null,
+                "1": 0,
+                "2": 1,
+                "3": 2,
+                "4": 3,
+                "7": 10,
+                "8": 7,
+                "5": 8,
+                "9": 4,
+                "10": 9
+            },
+            "next_node": {
+                "0": 1,
+                "1": 2,
+                "2": 3,
+                "3": 4,
+                "4": 9,
+                "7": 8,
+                "8": 5,
+                "5": null,
+                "9": 10,
+                "10": 7
+            },
+            "conn": {
+                "0": {
+                    "9": [
+                        true,
+                        -6.225908590477726
+                    ],
+                    "10": [
+                        true,
+                        -6.225908590477726
+                    ],
+                    "7": [
+                        true,
+                        7.170098414373691
+                    ],
+                    "8": [
+                        true,
+                        3.928718631332236
+                    ],
+                    "5": [
+                        true,
+                        -8.52125516560923
+                    ]
+                },
+                "1": {
+                    "9": [
+                        true,
+                        -9.93252421062317
+                    ],
+                    "10": [
+                        true,
+                        -9.93252421062317
+                    ],
+                    "7": [
+                        false,
+                        -6.80111922500684
+                    ],
+                    "8": [
+                        true,
+                        3.180261828988708
+                    ],
+                    "5": [
+                        false,
+                        3.730407765879613
+                    ]
+                },
+                "2": {
+                    "9": [
+                        true,
+                        1.7026205118773994
+                    ],
+                    "10": [
+                        true,
+                        1.7026205118773994
+                    ],
+                    "7": [
+                        true,
+                        -7.61837971119311
+                    ],
+                    "8": [
+                        true,
+                        -3.397146131667703
+                    ],
+                    "5": [
+                        true,
+                        8.963756895576141
+                    ]
+                },
+                "3": {
+                    "9": [
+                        false,
+                        -7.823179147706023
+                    ],
+                    "10": [
+                        false,
+                        -7.823179147706023
+                    ],
+                    "7": [
+                        true,
+                        9.484698724699856
+                    ],
+                    "8": [
+                        true,
+                        5.082077307571114
+                    ],
+                    "5": [
+                        true,
+                        -8.526903829067713
+                    ]
+                },
+                "4": {
+                    "9": [
+                        true,
+                        7.219922243669111
+                    ],
+                    "10": [
+                        true,
+                        7.219922243669111
+                    ],
+                    "7": [
+                        true,
+                        6.0133817045727085
+                    ],
+                    "8": [
+                        true,
+                        6.131624315077405
+                    ],
+                    "5": [
+                        true,
+                        -2.6198056217022785
+                    ]
+                },
+                "9": {
+                    "10": [
+                        false,
+                        0.0
+                    ],
+                    "7": [
+                        true,
+                        -15.250294614630903
+                    ],
+                    "8": [
+                        true,
+                        -8.682235171659784
+                    ],
+                    "5": [
+                        false,
+                        -1.309991231348985
+                    ]
+                },
+                "10": {
+                    "7": [
+                        true,
+                        4.357227032751687
+                    ],
+                    "8": [
+                        true,
+                        2.480638620474224
+                    ],
+                    "5": [
+                        false,
+                        0.37428320895685285
+                    ]
+                },
+                "7": {
+                    "8": [
+                        true,
+                        -9.374689574161351
+                    ],
+                    "5": [
+                        true,
+                        17.644036570919564
+                    ]
+                },
+                "8": {
+                    "5": [
+                        true,
+                        -14.903053549791231
+                    ]
+                },
+                "5": {}
+            }
+        }
+    }
+}

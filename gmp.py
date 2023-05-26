@@ -324,9 +324,22 @@ class DynamicGMP:
         copied = DynamicGMP(d_input=self.d_input, d_output=self.d_output, lb_hidden=self.lb_hidden, ub_hidden=self.ub_hidden, is_deepcopying=True)
         copied.nodes_cnt = self.nodes_cnt
         copied.active_hidden_nodes_cnt = self.active_hidden_nodes_cnt
-        copied.prev_node = copy.deepcopy(self.prev_node)
-        copied.next_node = copy.deepcopy(self.next_node)
-        copied.conn = copy.deepcopy(self.conn)
+        # copied.prev_node = copy.deepcopy(self.prev_node)
+        # copied.next_node = copy.deepcopy(self.next_node)
+        # copied.conn = copy.deepcopy(self.conn)
+        copied.prev_node = {node_id: self.prev_node[node_id] for node_id in self.prev_node.keys() if not self.is_deleted_hidden_node(node_id)}
+        copied.next_node = {node_id: self.next_node[node_id] for node_id in self.next_node.keys() if not self.is_deleted_hidden_node(node_id)}
+        copied.conn = {
+            src_node_id: {
+                dst_node_id: [
+                    self.conn[src_node_id][dst_node_id][0],
+                    self.conn[src_node_id][dst_node_id][1],
+                ]
+                for dst_node_id in self.next_nodes(src_node_id, including=False)
+                if self.is_existing_edge(src_node_id, dst_node_id)
+            }
+            for src_node_id in self.next_nodes(0)
+        }
         return copied
 
     # =================================================
@@ -499,7 +512,7 @@ class MutationModifiedBackPropagation(Mutation):
 
                     if learning_rate <= self.lb_learning_rate: break
 
-        print('\t\t\033[33mFinished {} epochs.\033[0m\n\n'.format(epoch_idx))
+        print('\t\t\033[33mModified Back-Propagation finished {} epochs.\033[0m\n\n'.format(epoch_idx))
         self.all_invokes_epochs_cnt += epoch_idx
 
         return gmp
@@ -597,19 +610,24 @@ class MutationSimulatedAnnealing(Mutation):
 
         fitness_value = self.fitness_function(gmp, dataset)
 
+        print('\t\t\033[33mSimulated Annealing : {:.6f} -> '.format(fitness_value), end='')
+
         for temperature in self.temperatures_list:
             for iteration in range(1, self.iterations_per_temperature+1):
                 modified_gmp = copy.deepcopy(gmp)
                 self.modify(modified_gmp)
                 modified_fitness_value = self.fitness_function(modified_gmp, dataset)
 
-                fitness_value_change = modified_fitness_value - fitness_value
+                # fitness_value_change = modified_fitness_value - fitness_value
+                fitness_value_change = modified_fitness_value / fitness_value - 1
                 accept_probability = math.exp(- fitness_value_change / temperature)
                 accepted = (random.random() < accept_probability)
 
                 if accepted:
                     gmp = modified_gmp
                     fitness_value = modified_fitness_value
+
+        print('{:.6f}.\033[0m\n\n'.format(fitness_value))
 
         return gmp
         # TODO

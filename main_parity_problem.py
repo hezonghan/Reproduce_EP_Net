@@ -3,7 +3,7 @@
 import json
 import math
 
-from gmp import MutationModifiedBackPropagation, MutationModifiedBackPropagation_Focus, MutationSimulatedAnnealing, MutationNodeSplitting
+from gmp import DynamicGMP, MutationModifiedBackPropagation, MutationModifiedBackPropagation_Focus, MutationSimulatedAnnealing, MutationNodeSplitting
 from ep_net import ep_net_optimize, simple_gmp_fitness, simple_rank_based_selection, DefaultInitializeMutationController, DefaultEvolveMutationController
 from hzh_utils import get_date_time_str
 
@@ -15,10 +15,10 @@ def generate_bitstring(v):
     ]
 
 
-def generate_dataset(N):
+def generate_dataset(N, with_bias=False):
     return [
         {
-            'input': generate_bitstring(i),
+            'input': generate_bitstring(i) if (not with_bias) else generate_bitstring(i) + [1],
             'output': [sum(generate_bitstring(i)) % 2],
             # 'output': [0.4 + 0.2 * (sum(generate_bitstring(i)) % 2)],
         }
@@ -26,14 +26,27 @@ def generate_dataset(N):
     ]
 
 
+def calculate_hits(gmp:DynamicGMP):
+    hits = 0
+    for datapoint in dataset:
+        estimated_output_data, loss, fpd, _, _ = gmp.evaluate(datapoint['input'], datapoint['output'], derivative_unnecessary=True)
+        if (estimated_output_data[0] - 0.5) * (datapoint['output'][0] - 0.5) > 0: hits += 1
+    return hits
+
+
 if __name__ == '__main__':
 
-    print('\n\nStarted at {}'.format(get_date_time_str()))
+    start_date_time_str = get_date_time_str()
+    print('\n\nStarted at {}'.format(start_date_time_str))
 
-    N = 3
-    dataset = generate_dataset(N)
+    with_bias = True
+    N = 4
+    dataset = generate_dataset(N, with_bias)
     # print(json.dumps(dataset, indent=4))
     print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
+
+    # print('Approximate time of population initialization:\n\tN=3\t8s\n\tN=4\t20s\n\tN=6')
+    print('Approximate time of population initialization:\n\tN=3\t14s\n\tN=4\t54s\n\tN=5\t180s')
 
     # ==================================================
     
@@ -109,7 +122,7 @@ if __name__ == '__main__':
         -0.02 / math.log(0.5),
     ]  #  - loss_increase / temp = ln P_accept = ln 0.5
     # -------
-    sa_iterations_per_temperature = 0  # overwritten
+    # sa_iterations_per_temperature = 0  # overwritten
 
 
     node_spliting_alpha = 0.4
@@ -173,6 +186,7 @@ if __name__ == '__main__':
 
     # ------------------------------
 
+    best_gmp:DynamicGMP
     best_gmp, used_generations = ep_net_optimize(
         dataset=dataset,
 
@@ -199,4 +213,80 @@ if __name__ == '__main__':
     # print(json.dumps(best_gmp.conn, indent=4))
     best_gmp.display()
 
+    best_gmp_hits = calculate_hits(best_gmp)
+
     print('\n\nSolved N-parity problem : \033[1;32mN={}\033[0m\n'.format(N))
+
+    result_file_path = './results/{}__N={}__{:04d}gen__hit{:04d}.json'.format(start_date_time_str, N, used_generations, best_gmp_hits)
+    print('\n\nResult saved at \033[34m{}\033[0m'.format(result_file_path))
+    result_json = {
+        'result_file_path': result_file_path,
+        'start_date_time_str': start_date_time_str,
+        'problem': {
+            'N': N,
+            'with_bias': with_bias,
+        },
+        'config': {
+            'evolve': {
+                'population_size': population_size,
+                'generations': generations,
+                'evolve_significant_reduce_ratio': evolve_significant_reduce_ratio,
+            },
+            'network_structure_limit': {
+                'lb_hidden': lb_hidden,
+                'ub_hidden': ub_hidden,
+
+                'lb_deleted_nodes_cnt': lb_deleted_nodes_cnt,
+                'ub_deleted_nodes_cnt': ub_deleted_nodes_cnt,
+                'lb_added_nodes_cnt': lb_added_nodes_cnt,
+                'ub_added_nodes_cnt': ub_added_nodes_cnt,
+                'lb_deleted_connections_cnt': lb_deleted_connections_cnt,
+                'ub_deleted_connections_cnt': ub_deleted_connections_cnt,
+                'lb_added_connections_cnt': lb_added_connections_cnt,
+                'ub_added_connections_cnt': ub_added_connections_cnt,
+            },
+            'network_structure_init': {
+                'lb_init_hidden_nodes_cnt': lb_init_hidden_nodes_cnt,
+                'ub_init_hidden_nodes_cnt': ub_init_hidden_nodes_cnt,
+                'init_conn_density': init_conn_density,
+                'init_weight_abs_ub': init_weight_abs_ub,
+            },
+            'mbp': {
+                'mbp_init_learning_rate': mbp_init_learning_rate,
+                'mbp_lb_learning_rate': mbp_lb_learning_rate,
+                'mbp_ub_learning_rate': mbp_ub_learning_rate,
+                'learning_rate_increase_multiple': learning_rate_increase_multiple,
+                'learning_rate_decrease_multiple': learning_rate_decrease_multiple,
+                'mbp_once_total_epochs': mbp_once_total_epochs,
+                'mbp_learning_rate_adapt_epochs': mbp_learning_rate_adapt_epochs,
+            },
+            'sa': {
+                'sa_number_of_temperature': sa_number_of_temperature,
+                'sa_iterations_per_temperature': sa_iterations_per_temperature,
+                'sa_temperatures_list': sa_temperatures_list,
+            },
+            'node_spliting': {
+                'node_spliting_alpha': node_spliting_alpha,
+            },
+        },
+        'result': {
+            'used_generations': used_generations,
+            'hits': best_gmp_hits,
+            'network': {
+                'd_input': best_gmp.d_input,
+                'd_output': best_gmp.d_output,
+                'lb_hidden': best_gmp.lb_hidden,
+                'ub_hidden': best_gmp.ub_hidden,
+
+                'nodes_cnt': best_gmp.nodes_cnt,
+                'active_hidden_nodes_cnt': best_gmp.active_hidden_nodes_cnt,
+
+                'prev_node': best_gmp.prev_node,
+                'next_node': best_gmp.next_node,
+                'conn': best_gmp.conn,
+            },
+        },
+    }
+    f = open(result_file_path, 'x')
+    f.write(json.dumps(result_json, indent=4))
+    f.close()
