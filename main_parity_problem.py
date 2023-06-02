@@ -8,20 +8,22 @@ from ep_net import ep_net_optimize, simple_gmp_fitness, simple_rank_based_select
 from hzh_utils import get_date_time_str
 
 
-def generate_bitstring(v):
+def generate_bitstring(v, input_values=[0.0, 1.0]):
     return [
-        1 if v & (2**b) > 0 else 0
+        # 1 if v & (2**b) > 0 else 0
+        # 1 if v & (2**b) > 0 else -1
+        input_values[1] if v & (2**b) > 0 else input_values[0]
         for b in range(0, N)  # result[0] is the lowest bit
     ]
 
 
-def generate_dataset(N, with_bias=False, output_values=[0.0, 1.0]):
+def generate_dataset(N, with_bias=False, input_values=[0.0, 1.0], output_values=[0.0, 1.0]):
     return [
         {
-            'input': generate_bitstring(i) if (not with_bias) else generate_bitstring(i) + [1],
+            'input': generate_bitstring(i, input_values) if (not with_bias) else generate_bitstring(i, input_values) + [1],
             # 'output': [sum(generate_bitstring(i)) % 2],
             # 'output': [0.4 + 0.2 * (sum(generate_bitstring(i)) % 2)],
-            'output': [output_values[sum(generate_bitstring(i)) % 2]],
+            'output': [output_values[round(sum(generate_bitstring(i))) % 2]],
         }
         for i in range(0, 2**N)
     ]
@@ -41,9 +43,10 @@ if __name__ == '__main__':
     print('\n\nStarted at {}'.format(start_date_time_str))
 
     with_bias = True
-    N = 3
+    N = 4
+    input_values = [0.0, +1.0]
     output_values = [0.2, 0.8]
-    dataset = generate_dataset(N, with_bias, output_values)
+    dataset = generate_dataset(N, with_bias, input_values, output_values)
     # print(json.dumps(dataset, indent=4))
     print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
 
@@ -227,6 +230,7 @@ if __name__ == '__main__':
         'problem': {
             'N': N,
             'with_bias': with_bias,
+            'input_values': input_values,
             'output_values': output_values,
         },
         'config': {
