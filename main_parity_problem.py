@@ -192,7 +192,7 @@ if __name__ == '__main__':
     # ------------------------------
 
     best_gmp:DynamicGMP
-    best_gmp, used_generations = ep_net_optimize(
+    best_gmp, used_generations, population_initialize_time_cost, evolve_time_cost = ep_net_optimize(
         dataset=dataset,
 
         lb_hidden=lb_hidden,
@@ -278,6 +278,9 @@ if __name__ == '__main__':
         },
         'result': {
             'used_generations': used_generations,
+            'population_initialize_time_cost': population_initialize_time_cost,
+            'evolve_time_cost': evolve_time_cost,
+            'mbp_epochs': mbp.all_invokes_epochs_cnt,
             'hits': best_gmp_hits,
             'network': {
                 'd_input': best_gmp.d_input,

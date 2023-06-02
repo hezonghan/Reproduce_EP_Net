@@ -404,7 +404,7 @@ def ep_net_optimize(
             t4 = default_timer()
             print('\033[1;32mFound completely-matching (accuracy=100%) gmp!\033[0m')
             print('Evolution totally costs {:.2f} s.'.format(t4 - t1))
-            return offspring, generation
+            return offspring, generation, (t1-t0), (t4-t1)
 
         t3 = default_timer()
         print('\tcosts {:.3f} s.'.format(t3-t2))
@@ -440,4 +440,4 @@ def ep_net_optimize(
 
     print('best gmp: fitness={:.6f} , active_hidden={}'.format(fitness_values[best_gmp_idx], population[best_gmp_idx].active_hidden_nodes_cnt))
 
-    return best_gmp, generation
+    return best_gmp, generation, (t1-t0), (t4-t1)
