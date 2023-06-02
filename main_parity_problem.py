@@ -15,12 +15,13 @@ def generate_bitstring(v):
     ]
 
 
-def generate_dataset(N, with_bias=False):
+def generate_dataset(N, with_bias=False, output_values=[0.0, 1.0]):
     return [
         {
             'input': generate_bitstring(i) if (not with_bias) else generate_bitstring(i) + [1],
-            'output': [sum(generate_bitstring(i)) % 2],
+            # 'output': [sum(generate_bitstring(i)) % 2],
             # 'output': [0.4 + 0.2 * (sum(generate_bitstring(i)) % 2)],
+            'output': [output_values[sum(generate_bitstring(i)) % 2]],
         }
         for i in range(0, 2**N)
     ]
@@ -40,8 +41,9 @@ if __name__ == '__main__':
     print('\n\nStarted at {}'.format(start_date_time_str))
 
     with_bias = True
-    N = 4
-    dataset = generate_dataset(N, with_bias)
+    N = 3
+    output_values = [0.2, 0.8]
+    dataset = generate_dataset(N, with_bias, output_values)
     # print(json.dumps(dataset, indent=4))
     print('\nSolving N-parity problem : \033[1;32mN={}\033[0m'.format(N))
 
@@ -225,6 +227,7 @@ if __name__ == '__main__':
         'problem': {
             'N': N,
             'with_bias': with_bias,
+            'output_values': output_values,
         },
         'config': {
             'evolve': {

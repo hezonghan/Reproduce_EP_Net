@@ -397,7 +397,7 @@ def ep_net_optimize(
             if (estimated_output_data[0] - 0.5) * (datapoint['output'][0] - 0.5) > 0: accuracy[0] += 1
             # print('\t\tloss = {:.6f}'.format(loss))
             # print('\t\tloss = {} - {} = {:.6f}'.format(datapoint['output'], estimated_output_data, loss))
-            print('\t\tloss = {:.0f} - {:.4f}  ==>  {:.4f}  (assumed single output node)'.format(datapoint['output'][0], estimated_output_data[0], loss))
+            print('\t\tloss = {:.2f} - {:.4f}  ==>  {:.4f}  (assumed single output node)'.format(datapoint['output'][0], estimated_output_data[0], loss))
         print('\toffspring accuracy: {}/{} = {:.2f}%'.format(accuracy[0], accuracy[1], accuracy[0]/accuracy[1]*100 ))
         # if accuracy[0] == accuracy[1]:
         if (accuracy[0] == 8 and accuracy[1] == 8) or (accuracy[0] == 15 and accuracy[1] == 16):
