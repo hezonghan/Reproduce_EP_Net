@@ -256,26 +256,54 @@ class DynamicGMP:
         if derivative_unnecessary:
             return estimated_output_data, estimated_loss, {}, value, {}
         
+        # partial_derivative = {}
+        # for node_i_id in self.next_nodes(0):
+        #     partial_derivative[node_i_id] = {}
+        #     for node_j_id in self.next_nodes(node_i_id, including=False):
+        #         # if node_j_id not in self.conn[node_i_id]: continue
+        #         # if not self.conn[node_i_id][node_j_id][0]: continue
+        #         # if not self.is_enabled_edge(node_i_id, node_j_id): continue  # The disabled connections are derivatived as if their weights are zeros.
+        #         partial_derivative[node_i_id][node_j_id] = {}
+        # 
+        #         for node_k_id in self.previous_nodes(node_j_id, including=False):
+        #             partial_derivative[node_i_id][node_j_id][node_k_id] = 0
+        # 
+        #         partial_derivative[node_i_id][node_j_id][node_j_id] = value[node_j_id] * (1 - value[node_j_id]) * value[node_i_id]
+        # 
+        #         for node_k_id in self.next_nodes(node_j_id, including=False):
+        #             partial_derivative[node_i_id][node_j_id][node_k_id] = 0
+        #             for node_k0_id in self.previous_nodes(node_k_id, including=False):
+        #                 if not self.is_enabled_edge(node_k0_id, node_k_id): continue
+        #                 partial_derivative[node_i_id][node_j_id][node_k_id] += self.conn[node_k0_id][node_k_id][1] * partial_derivative[node_i_id][node_j_id][node_k0_id]
+        #             partial_derivative[node_i_id][node_j_id][node_k_id] *= value[node_k_id] * (1 - value[node_k_id])
+
+        # self.display()  # for debug only
+
+        nodes_pairs_partial_derivative = {}
+        for output_node_id in range(self.d_input, self.d_input + self.d_output):
+            # print('\t\toutput_node_id={}'.format(output_node_id))
+            nodes_pairs_partial_derivative[output_node_id] = {}
+
+            nodes_pairs_partial_derivative[output_node_id][output_node_id] = 1
+
+            for node_j_id in self.previous_nodes(self.d_input + self.d_output - 1):
+                # print('\t\t\tnode_j_id={}'.format(node_j_id))
+                if node_j_id == output_node_id: continue
+                nodes_pairs_partial_derivative[output_node_id][node_j_id] = 0
+                for node_j2_id in self.next_nodes(node_j_id, including=False):
+                    # print('\t\t\t\tnode_j2_id={}'.format(node_j2_id))
+                    if not self.is_enabled_edge(node_j_id, node_j2_id): continue
+                    nodes_pairs_partial_derivative[output_node_id][node_j_id] += nodes_pairs_partial_derivative[output_node_id][node_j2_id] * value[node_j2_id] * (1 - value[node_j2_id]) * self.conn[node_j_id][node_j2_id][1]
+
         partial_derivative = {}
         for node_i_id in self.next_nodes(0):
             partial_derivative[node_i_id] = {}
             for node_j_id in self.next_nodes(node_i_id, including=False):
-                # if node_j_id not in self.conn[node_i_id]: continue
-                # if not self.conn[node_i_id][node_j_id][0]: continue
                 # if not self.is_enabled_edge(node_i_id, node_j_id): continue  # The disabled connections are derivatived as if their weights are zeros.
                 partial_derivative[node_i_id][node_j_id] = {}
 
-                for node_k_id in self.previous_nodes(node_j_id, including=False):
-                    partial_derivative[node_i_id][node_j_id][node_k_id] = 0
-
-                partial_derivative[node_i_id][node_j_id][node_j_id] = value[node_j_id] * (1 - value[node_j_id]) * value[node_i_id]
-
-                for node_k_id in self.next_nodes(node_j_id, including=False):
-                    partial_derivative[node_i_id][node_j_id][node_k_id] = 0
-                    for node_k0_id in self.previous_nodes(node_k_id, including=False):
-                        if not self.is_enabled_edge(node_k0_id, node_k_id): continue
-                        partial_derivative[node_i_id][node_j_id][node_k_id] += self.conn[node_k0_id][node_k_id][1] * partial_derivative[node_i_id][node_j_id][node_k0_id]
-                    partial_derivative[node_i_id][node_j_id][node_k_id] *= value[node_k_id] * (1 - value[node_k_id])
+                for output_node_id in range(self.d_input, self.d_input + self.d_output):
+                    partial_derivative[node_i_id][node_j_id][output_node_id] = nodes_pairs_partial_derivative[output_node_id][node_j_id] * value[node_j_id] * (1 - value[node_j_id]) * value[node_i_id]
 
         final_partial_derivative = {}
         for node_i_id in self.next_nodes(0):

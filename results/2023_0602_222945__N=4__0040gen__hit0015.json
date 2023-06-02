@@ -1,0 +1,221 @@
+{
+    "result_file_path": "./results/2023_0602_222945__N=4__0040gen__hit0015.json",
+    "start_date_time_str": "2023_0602_222945",
+    "problem": {
+        "N": 4,
+        "with_bias": true,
+        "input_values": [
+            0.0,
+            1.0
+        ],
+        "output_values": [
+            0.2,
+            0.8
+        ]
+    },
+    "config": {
+        "evolve": {
+            "population_size": 20,
+            "generations": 1000,
+            "evolve_significant_reduce_ratio": 0.05
+        },
+        "network_structure_limit": {
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "lb_deleted_nodes_cnt": 1,
+            "ub_deleted_nodes_cnt": 2,
+            "lb_added_nodes_cnt": 1,
+            "ub_added_nodes_cnt": 2,
+            "lb_deleted_connections_cnt": 1,
+            "ub_deleted_connections_cnt": 3,
+            "lb_added_connections_cnt": 1,
+            "ub_added_connections_cnt": 3
+        },
+        "network_structure_init": {
+            "lb_init_hidden_nodes_cnt": 2,
+            "ub_init_hidden_nodes_cnt": 4,
+            "init_conn_density": 0.75,
+            "init_weight_abs_ub": 10
+        },
+        "mbp": {
+            "mbp_init_learning_rate": 1.5,
+            "mbp_lb_learning_rate": 0.001,
+            "mbp_ub_learning_rate": 10,
+            "learning_rate_increase_multiple": 1.25,
+            "learning_rate_decrease_multiple": 0.8,
+            "mbp_once_total_epochs": 3000,
+            "mbp_learning_rate_adapt_epochs": 5
+        },
+        "sa": {
+            "sa_number_of_temperature": 5,
+            "sa_iterations_per_temperature": 100,
+            "sa_temperatures_list": [
+                0.14426950408889636,
+                0.11541560327111708,
+                0.0865617024533378,
+                0.05770780163555854,
+                0.02885390081777927
+            ]
+        },
+        "node_spliting": {
+            "node_spliting_alpha": 0.4
+        }
+    },
+    "result": {
+        "used_generations": 40,
+        "hits": 15,
+        "network": {
+            "d_input": 5,
+            "d_output": 1,
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "nodes_cnt": 10,
+            "active_hidden_nodes_cnt": 3,
+            "prev_node": {
+                "0": null,
+                "1": 0,
+                "2": 1,
+                "3": 2,
+                "4": 3,
+                "7": 9,
+                "5": 7,
+                "8": 4,
+                "9": 8
+            },
+            "next_node": {
+                "0": 1,
+                "1": 2,
+                "2": 3,
+                "3": 4,
+                "4": 8,
+                "7": 5,
+                "5": null,
+                "8": 9,
+                "9": 7
+            },
+            "conn": {
+                "0": {
+                    "8": [
+                        true,
+                        -6.669459421917441
+                    ],
+                    "9": [
+                        true,
+                        -6.669459421917441
+                    ],
+                    "7": [
+                        true,
+                        -8.433097622969166
+                    ],
+                    "5": [
+                        false,
+                        -2.498853930750269
+                    ]
+                },
+                "1": {
+                    "8": [
+                        true,
+                        -8.547418119922469
+                    ],
+                    "9": [
+                        true,
+                        -8.547418119922469
+                    ],
+                    "7": [
+                        false,
+                        5.870824946106666
+                    ],
+                    "5": [
+                        true,
+                        -2.4397172822681714
+                    ]
+                },
+                "2": {
+                    "8": [
+                        true,
+                        -8.80444209941473
+                    ],
+                    "9": [
+                        true,
+                        -8.80444209941473
+                    ],
+                    "7": [
+                        true,
+                        -0.2538538840545147
+                    ],
+                    "5": [
+                        true,
+                        -2.3251760343053283
+                    ]
+                },
+                "3": {
+                    "8": [
+                        true,
+                        9.012430064530172
+                    ],
+                    "9": [
+                        true,
+                        9.012430064530172
+                    ],
+                    "7": [
+                        true,
+                        8.512036532593228
+                    ],
+                    "5": [
+                        false,
+                        -7.3340324021808545
+                    ]
+                },
+                "4": {
+                    "8": [
+                        true,
+                        2.979316484462705
+                    ],
+                    "9": [
+                        true,
+                        2.979316484462705
+                    ],
+                    "7": [
+                        false,
+                        6.646514727328632
+                    ],
+                    "5": [
+                        true,
+                        1.3741000690109653
+                    ]
+                },
+                "8": {
+                    "9": [
+                        false,
+                        0.0
+                    ],
+                    "7": [
+                        false,
+                        4.923300289253755
+                    ],
+                    "5": [
+                        true,
+                        -7.397611762635704
+                    ]
+                },
+                "9": {
+                    "7": [
+                        false,
+                        -1.406657225501073
+                    ],
+                    "5": [
+                        true,
+                        2.1136033607530584
+                    ]
+                },
+                "7": {
+                    "5": [
+                        true,
+                        4.852133910074003
+                    ]
+                },
+                "5": {}
+            }
+        }
+    }
+}

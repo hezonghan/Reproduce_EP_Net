@@ -1,0 +1,185 @@
+{
+    "result_file_path": "./results/2023_0602_222856__N=4__0016gen__hit0015.json",
+    "start_date_time_str": "2023_0602_222856",
+    "problem": {
+        "N": 4,
+        "with_bias": true,
+        "input_values": [
+            0.0,
+            1.0
+        ],
+        "output_values": [
+            0.2,
+            0.8
+        ]
+    },
+    "config": {
+        "evolve": {
+            "population_size": 20,
+            "generations": 1000,
+            "evolve_significant_reduce_ratio": 0.05
+        },
+        "network_structure_limit": {
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "lb_deleted_nodes_cnt": 1,
+            "ub_deleted_nodes_cnt": 2,
+            "lb_added_nodes_cnt": 1,
+            "ub_added_nodes_cnt": 2,
+            "lb_deleted_connections_cnt": 1,
+            "ub_deleted_connections_cnt": 3,
+            "lb_added_connections_cnt": 1,
+            "ub_added_connections_cnt": 3
+        },
+        "network_structure_init": {
+            "lb_init_hidden_nodes_cnt": 2,
+            "ub_init_hidden_nodes_cnt": 4,
+            "init_conn_density": 0.75,
+            "init_weight_abs_ub": 10
+        },
+        "mbp": {
+            "mbp_init_learning_rate": 1.5,
+            "mbp_lb_learning_rate": 0.001,
+            "mbp_ub_learning_rate": 10,
+            "learning_rate_increase_multiple": 1.25,
+            "learning_rate_decrease_multiple": 0.8,
+            "mbp_once_total_epochs": 3000,
+            "mbp_learning_rate_adapt_epochs": 5
+        },
+        "sa": {
+            "sa_number_of_temperature": 5,
+            "sa_iterations_per_temperature": 100,
+            "sa_temperatures_list": [
+                0.14426950408889636,
+                0.11541560327111708,
+                0.0865617024533378,
+                0.05770780163555854,
+                0.02885390081777927
+            ]
+        },
+        "node_spliting": {
+            "node_spliting_alpha": 0.4
+        }
+    },
+    "result": {
+        "used_generations": 16,
+        "hits": 15,
+        "network": {
+            "d_input": 5,
+            "d_output": 1,
+            "lb_hidden": 2,
+            "ub_hidden": 4,
+            "nodes_cnt": 10,
+            "active_hidden_nodes_cnt": 2,
+            "prev_node": {
+                "0": null,
+                "1": 0,
+                "2": 1,
+                "3": 2,
+                "4": 3,
+                "6": 4,
+                "7": 6,
+                "5": 7
+            },
+            "next_node": {
+                "0": 1,
+                "1": 2,
+                "2": 3,
+                "3": 4,
+                "4": 6,
+                "6": 7,
+                "7": 5,
+                "5": null
+            },
+            "conn": {
+                "0": {
+                    "6": [
+                        true,
+                        -8.047277226868959
+                    ],
+                    "7": [
+                        true,
+                        -1.2254170199711225
+                    ],
+                    "5": [
+                        true,
+                        -3.0116980550494024
+                    ]
+                },
+                "1": {
+                    "6": [
+                        true,
+                        -5.10404103585071
+                    ],
+                    "7": [
+                        true,
+                        7.8850727513675585
+                    ],
+                    "5": [
+                        false,
+                        4.020561042012865
+                    ]
+                },
+                "2": {
+                    "6": [
+                        true,
+                        8.482136517773421
+                    ],
+                    "7": [
+                        false,
+                        -2.6000704602046176
+                    ],
+                    "5": [
+                        true,
+                        2.886505573998227
+                    ]
+                },
+                "3": {
+                    "6": [
+                        true,
+                        -7.450609653056367
+                    ],
+                    "7": [
+                        false,
+                        -1.1631007307111485
+                    ],
+                    "5": [
+                        true,
+                        -2.7782869695290078
+                    ]
+                },
+                "4": {
+                    "6": [
+                        true,
+                        1.10052012695302
+                    ],
+                    "7": [
+                        true,
+                        -3.2083605973627196
+                    ],
+                    "5": [
+                        true,
+                        4.451608485735427
+                    ]
+                },
+                "6": {
+                    "7": [
+                        true,
+                        6.328086706430553
+                    ],
+                    "5": [
+                        true,
+                        -4.486972187766403
+                    ]
+                },
+                "7": {
+                    "5": [
+                        true,
+                        -2.9746035489901894
+                    ]
+                },
+                "5": {}
+            }
+        }
+    }
+}
