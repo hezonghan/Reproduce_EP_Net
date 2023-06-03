@@ -498,10 +498,14 @@ class MutationModifiedBackPropagation(Mutation):
             ]))
             # print(overall_final_partial_derivative_vector_length)
 
+            if abs(overall_final_partial_derivative_vector_length) < 1e-8: return True
+
             for src_node_id in gmp.next_nodes(0):
                 for dst_node_id in gmp.next_nodes(src_node_id, including=False):
                     if not gmp.is_enabled_edge(src_node_id, dst_node_id): continue
                     gmp.conn[src_node_id][dst_node_id][1] -= learning_rate * overall_final_partial_derivative[src_node_id][dst_node_id] / overall_final_partial_derivative_vector_length
+
+            return False
 
     def operate(self, gmp:DynamicGMP, dataset):
 
@@ -515,7 +519,9 @@ class MutationModifiedBackPropagation(Mutation):
         # print('\t\t\t\033[33mStart MBP : learning_rate={:.3f} , current_overall_loss={:.6f}\033[0m'.format(learning_rate, last_overall_loss))
 
         for epoch_idx in range(1, self.total_epochs + 1):
-            self.train(gmp, dataset, learning_rate)
+            reached_local_optimal = self.train(gmp, dataset, learning_rate)
+            
+            if reached_local_optimal: break
 
             if epoch_idx % self.learning_rate_adapt_epochs == 0:
                 current_overall_loss, _ = gmp.evaluate_all(dataset, derivative_unnecessary=True)

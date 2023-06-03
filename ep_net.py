@@ -400,7 +400,7 @@ def ep_net_optimize(
             print('\t\tloss = {:.2f} - {:.4f}  ==>  {:.4f}  (assumed single output node)'.format(datapoint['output'][0], estimated_output_data[0], loss))
         print('\toffspring accuracy: {}/{} = {:.2f}%'.format(accuracy[0], accuracy[1], accuracy[0]/accuracy[1]*100 ))
         # if accuracy[0] == accuracy[1]:
-        if (accuracy[0] == 8 and accuracy[1] == 8) or (accuracy[0] == 15 and accuracy[1] == 16):
+        if (accuracy[0] == 8 and accuracy[1] == 8) or (accuracy[0] == 15 and accuracy[1] == 16) or (accuracy[0] == 32 and accuracy[1] == 32):
             t4 = default_timer()
             print('\033[1;32mFound completely-matching (accuracy=100%) gmp!\033[0m')
             print('Evolution totally costs {:.2f} s.'.format(t4 - t1))

@@ -43,7 +43,7 @@ if __name__ == '__main__':
     print('\n\nStarted at {}'.format(start_date_time_str))
 
     with_bias = True
-    N = 4
+    N = 5
     input_values = [0.0, +1.0]
     output_values = [0.2, 0.8]
     dataset = generate_dataset(N, with_bias, input_values, output_values)
